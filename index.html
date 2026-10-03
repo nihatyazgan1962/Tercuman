@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akıllı Tercüman - Çok Dilli Çeviri</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6C63FF;
+      --primary-hover: #5A52E0;
+      --bg-color: #F4F6FB;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+      --result-bg: #EEF2FF;
+      --result-border: #C7D2FE;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #FFFFFF;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left i {
+      color: var(--primary);
+      font-size: 24px;
+    }
+
+    .header-left h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .about-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .about-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .main-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Dil Seçim Çubuğu */
+    .lang-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-color);
+      padding: 8px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    select {
+      background: transparent;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+      padding: 8px 4px;
+    }
+
+    .swap-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .swap-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: rotate(180deg);
+    }
+
+    /* Giriş Kutusu */
+    .input-wrapper {
+      position: relative;
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      background: #FAFAFA;
+      transition: border-color 0.2s;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: var(--primary);
+      background: #FFFFFF;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 16px;
+      border: none;
+      background: transparent;
+      resize: none;
+      outline: none;
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    .input-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .action-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 18px;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(108, 99, 255, 0.1);
+    }
+
+    .icon-btn.recording {
+      color: #EF4444;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    /* Çevir Butonu */
+    .translate-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .translate-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .translate-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Çeviri Sonuç Kartı */
+    .result-wrapper {
+      background: var(--result-bg);
+      border: 1px solid var(--result-border);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .result-text {
+      font-size: 17px;
+      line-height: 1.5;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Modal CSS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      padding: 24px;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-header h2 {
+      font-size: 20px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-header h2 i {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <div class="header-left">
+        <i class="fa-solid fa-language"></i>
+        <h1>Akıllı Tercüman</h1>
+      </div>
+      <button class="about-btn" id="openAboutBtn" title="Hakkında">
+        <i class="fa-solid fa-circle-info"></i>
+      </button>
+    </header>
+
+    <div class="main-content">
+      <!-- Dil Seçimi -->
+      <div class="lang-bar">
+        <select id="sourceLang">
+          <option value="tr" selected>Türkçe</option>
+          <option value="en">İngilizce</option>
+          <option value="de">Almanca</option>
+          <option value="fr">Fransızca</option>
+          <option value="es">İspanyolca</option>
+          <option value="it">İtalyanca</option>
+          <option value="ru">Rusça</option>
+          <option value="ar">Arapça</option>
+          <option value="ja">Japonca</option>
+        </select>
+
+        <button class="swap-btn" id="swapBtn" title="Dilleri Değiştir">
+          <i class="fa-solid fa-arrow-right-arrow-left"></i>
+        </button>
+
+        <select id="targetLang">
+          <option value="tr">Türkçe</option>
+          <option value="en" selected>İngilizce</option>
+          <option value="de">Almanca</option>
+          <option value="fr">Fransızca</option>
+          <option value="es">İspanyolca</option>
+          <option value="it">İtalyanca</option>
+          <option value="ru">Rusça</option>
+          <option value="ar">Arapça</option>
+          <option value="ja">Japonca</option>
+        </select>
+      </div>
+
+      <!-- Kaynak Metin -->
+      <div class="input-wrapper">
+        <textarea id="inputText" placeholder="Metin girin veya mikrofona konuşun..."></textarea>
+        <div class="input-actions">
+          <div class="action-btn-group">
+            <button class="icon-btn" id="micBtn" title="Sesle Yazdır (STT)">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button class="icon-btn" id="listenSourceBtn" title="Metni Oku (TTS)">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+          </div>
+          <button class="icon-btn" id="clearBtn" title="Temizle">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Çevir Butonu -->
+      <button class="translate-btn" id="translateBtn">
+        <i class="fa-solid fa-arrow-down"></i>
+        <span>Çevir</span>
+      </button>
+
+      <!-- Çeviri Sonucu -->
+      <div class="result-wrapper">
+        <div class="result-header">
+          <span class="result-title" id="resultTitle">İNGİLİZCE ÇEVİRİSİ</span>
+          <div class="action-btn-group">
+            <button class="icon-btn" id="copyBtn" title="Kopyala">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+            <button class="icon-btn" id="listenResultBtn" title="Çeviriyi Seslendir">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+          </div>
+        </div>
+        <div class="result-text" id="resultText">Çeviri burada görüntülenecek...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hakkında Modal -->
+  <div id="aboutModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-circle-info"></i> Hakkında</h2>
+        <button class="icon-btn" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 18px; font-weight: 500; color: var(--primary); text-align: center;">Yazgan İletişim</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sourceLang = document.getElementById('sourceLang');
+    const targetLang = document.getElementById('targetLang');
+    const swapBtn = document.getElementById('swapBtn');
+    const inputText = document.getElementById('inputText');
+    const micBtn = document.getElementById('micBtn');
+    const listenSourceBtn = document.getElementById('listenSourceBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const translateBtn = document.getElementById('translateBtn');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultText = document.getElementById('resultText');
+    const copyBtn = document.getElementById('copyBtn');
+    const listenResultBtn = document.getElementById('listenResultBtn');
+    
+    // Hakkında Modal JS
+    const aboutModal = document.getElementById('aboutModal');
+    const openAboutBtn = document.getElementById('openAboutBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    openAboutBtn.addEventListener('click', () => {
+      aboutModal.classList.add('active');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      aboutModal.classList.remove('active');
+    });
+
+    aboutModal.addEventListener('click', (e) => {
+      if (e.target === aboutModal) {
+        aboutModal.classList.remove('active');
+      }
+    });
+
+    // Dili Başlığa Yaz
+    function updateResultTitle() {
+      const selectedName = targetLang.options[targetLang.selectedIndex].text;
+      resultTitle.innerText = `${selectedName} ÇEVİRİSİ`;
+    }
+    targetLang.addEventListener('change', updateResultTitle);
+
+    // Dilleri Swap Et
+    swapBtn.addEventListener('click', () => {
+      const temp = sourceLang.value;
+      sourceLang.value = targetLang.value;
+      targetLang.value = temp;
+      updateResultTitle();
+
+      if (resultText.innerText && resultText.innerText !== 'Çeviri burada görüntülenecek...') {
+        inputText.value = resultText.innerText;
+        resultText.innerText = 'Çeviri burada görüntülenecek...';
+      }
+    });
+
+    // Temizle
+    clearBtn.addEventListener('click', () => {
+      inputText.value = '';
+      resultText.innerText = 'Çeviri burada görüntülenecek...';
+    });
+
+    // Kopyala
+    copyBtn.addEventListener('click', () => {
+      if (resultText.innerText && resultText.innerText !== 'Çeviri burada görüntülenecek...') {
+        navigator.clipboard.writeText(resultText.innerText);
+        alert('Çeviri panoya kopyalandı!');
+      }
+    });
+
+    // Sesli Okuma (TTS - Web Speech API)
+    function speak(text, lang) {
+      if (!text || text === 'Çeviri burada görüntülenecek...') return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    listenSourceBtn.addEventListener('click', () => {
+      speak(inputText.value, sourceLang.value);
+    });
+
+    listenResultBtn.addEventListener('click', () => {
+      speak(resultText.innerText, targetLang.value);
+    });
+
+    // Mikrofon ile Ses Tanıma (STT)
+    let recognition = null;
+    let isRecording = false;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add('recording');
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        inputText.value = transcript;
+        translate();
+      };
+
+      recognition.onerror = () => {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+      };
+
+      recognition.onend = () => {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+      };
+    }
+
+    micBtn.addEventListener('click', () => {
+      if (!recognition) {
+        alert('Tarayıcınız ses tanımayı desteklemiyor.');
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.lang = sourceLang.value;
+        recognition.start();
+      }
+    });
+
+    // Gerçek Çeviri İsteği (MyMemory API)
+    async function translate() {
+      const query = inputText.value.trim();
+      if (!query) {
+        resultText.innerText = 'Lütfen çevrilecek bir metin girin.';
+        return;
+      }
+
+      translateBtn.innerHTML = `<span class="loading-spinner"></span> Çevriliyor...`;
+      translateBtn.disabled = true;
+
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=${sourceLang.value}|${targetLang.value}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.responseData && data.responseData.translatedText) {
+          resultText.innerText = data.responseData.translatedText;
+        } else {
+          resultText.innerText = 'Çeviri bulunamadı.';
+        }
+      } catch (err) {
+        resultText.innerText = 'Bağlantı hatası: Çeviri sunucusuna ulaşılamadı.';
+      } finally {
+        translateBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i> <span>Çevir</span>`;
+        translateBtn.disabled = false;
+      }
+    }
+
+    translateBtn.addEventListener('click', translate);
+  </script>
+</body>
+</html>
