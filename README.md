@@ -1,16 +1,26 @@
-# tercuman
+# 🌐 Tercüman — Çok Dilli Çeviri Uygulaması
 
-A new Flutter project.
+Konuşarak veya yazarak çeviri yapabileceğiniz, çeviriyi sesli olarak dinleyebileceğiniz Flutter tabanlı çok dilli tercüman uygulamasıdır.
 
-## Getting Started
+## ✨ Özellikler
 
-This project is a starting point for a Flutter application.
+- 🎤 Konuşmayı yazıya çevirme (`speech_to_text`)
+- 🔊 Çeviriyi sesli okuma (`flutter_tts`)
+- 🌍 Çok dilli çeviri (HTTP üzerinden çeviri servisi)
+- 📱 Android, iOS, web ve masaüstü platform desteği (Flutter)
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Teknolojiler
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter / Dart
+- http, flutter_tts, speech_to_text
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🚀 Kurulum
+
+```bash
+flutter pub get
+flutter run
+```
+
+## 👨‍💻 Geliştirici
+
+**Nihat Yazgan** — Yazgan Bilişim
