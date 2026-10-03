@@ -23,4 +23,5 @@ flutter run
 
 ## 👨‍💻 Geliştirici
 
-**Nihat Yazgan** — Yazgan Bilişim
+**Yazgan Bilişim**  
+E-posta: yazganbilisim2026@gmail.com
